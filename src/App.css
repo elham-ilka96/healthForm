@@ -1,0 +1,305 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  direction: rtl;
+  background: #f4f7fb;
+  color: #1f2937;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.page-title {
+  text-align: center;
+  color: #2563eb;
+  margin-bottom: 30px;
+}
+
+.form-card,
+.profile-card,
+.result-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  margin-top: 0;
+  color: #1e40af;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 12px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 15px;
+}
+
+.form-group label {
+  width: 170px;
+  flex-shrink: 0;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  width: 300px;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  direction: rtl;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.disease-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.disease-item {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.disease-item label {
+  cursor: pointer;
+}
+
+.disease-item input {
+  margin-left: 8px;
+}
+
+.primary-button {
+  width: 100%;
+  border: none;
+  padding: 13px;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+}
+
+.secondary-button {
+  width: 100%;
+  border: 1px solid #2563eb;
+  padding: 12px;
+  border-radius: 9px;
+  background: white;
+  color: #2563eb;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #eff6ff;
+}
+
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.info-item {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  line-height: 1.8;
+}
+
+.info-item strong {
+  color: #1e40af;
+}
+
+.bmi-box {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.bmi-box h3 {
+  margin-top: 0;
+  color: #1d4ed8;
+  margin-bottom: 15px;
+}
+
+.bmi-box p {
+  margin: 8px 0;
+  line-height: 1.8;
+}
+
+.bmi-box strong {
+  color: #1e40af;
+}
+
+.disease-result {
+  margin-bottom: 18px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-right: 4px solid #2563eb;
+}
+
+.disease-result h3 {
+  margin-top: 0;
+  color: #1e40af;
+}
+
+.disease-result ul {
+  padding-right: 20px;
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 20px 12px;
+  }
+
+  .disease-list,
+  .profile-info {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card,
+  .profile-card,
+  .result-card {
+    padding: 18px;
+  }
+  @media (max-width: 600px) {
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+  }
+
+  .form-group label {
+    width: 100%;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+  }
+}
+}
+.error-message {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  text-align: center;
+  font-weight: bold;
+}
+.disease-details {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.detail-group {
+  margin-bottom: 12px;
+}
+
+.detail-group:last-child {
+  margin-bottom: 0;
+}
+
+.detail-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #374151;
+}
+
+.detail-group input,
+.detail-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  direction: rtl;
+}
+
+.detail-group textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.detail-group input:focus,
+.detail-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.medical-history-box {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.medical-history-box h3 {
+  margin-top: 0;
+  color: #1e40af;
+}
+
+.medical-disease {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  border-right: 4px solid #2563eb;
+}
+
+.medical-disease h4 {
+  margin-top: 0;
+  color: #1e40af;
+}
+
+.medical-disease p {
+  line-height: 1.8;
+  margin: 8px 0;
+}
