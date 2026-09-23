@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { diseases } from "./data/diseases";
 import MedicalProfile from "./components/MedicalProfile";
@@ -14,11 +13,11 @@ function App() {
     weight: "",
     diseases: {},
     diseaseDetails: {},
-
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (field, value) => {
     setError("");
@@ -30,50 +29,87 @@ function App() {
   };
 
   const handleDiseaseChange = (diseaseId) => {
-  setPatient({
-    ...patient,
-    diseases: {
-      ...patient.diseases,
-      [diseaseId]: !patient.diseases[diseaseId],
-    },
-  });
-};
+    setPatient({
+      ...patient,
+      diseases: {
+        ...patient.diseases,
+        [diseaseId]: !patient.diseases[diseaseId],
+      },
+    });
+  };
 
   const handleDiseaseDetailChange = (
-  diseaseId,
-  field,
-  value
-) => {
-  setPatient({
-    ...patient,
-    diseaseDetails: {
-      ...patient.diseaseDetails,
-      [diseaseId]: {
-        ...patient.diseaseDetails[diseaseId],
-        [field]: value,
+    diseaseId,
+    field,
+    value
+  ) => {
+    setPatient({
+      ...patient,
+      diseaseDetails: {
+        ...patient.diseaseDetails,
+        [diseaseId]: {
+          ...patient.diseaseDetails[diseaseId],
+          [field]: value,
+        },
       },
-    },
-  });
-};
+    });
+  };
 
-const savePatient = () => {
-  const savedPatients =
-    JSON.parse(localStorage.getItem("patients")) || {};
+  // ذخیره اطلاعات در دیتابیس
+  const savePatient = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-  savedPatients[patient.nationalId] = patient;
+      const response = await fetch(
+        "http://localhost:5000/api/patients",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patient),
+        }
+      );
 
-  localStorage.setItem(
-    "patients",
-    JSON.stringify(savedPatients)
-  );
-};
+      const data = await response.json();
 
-  const handleSubmit = () => {
+      if (!response.ok) {
+        if (response.status === 409) {
+          setError(
+            "این کد ملی قبلاً در دیتابیس ثبت شده است."
+          );
+        } else {
+          setError(
+            data.message || "خطا در ذخیره اطلاعات"
+          );
+        }
+
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        "ارتباط با سرور برقرار نشد. مطمئن شوید Backend در حال اجراست."
+      );
+
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
     setError("");
 
     // بررسی نام
     if (!patient.name.trim()) {
-      setError("لطفاً نام و نام خانوادگی را وارد کنید.");
+      setError(
+        "لطفاً نام و نام خانوادگی را وارد کنید."
+      );
       return;
     }
 
@@ -84,7 +120,9 @@ const savePatient = () => {
     }
 
     if (!/^\d{10}$/.test(patient.nationalId)) {
-      setError("کد ملی باید دقیقاً ۱۰ رقم باشد.");
+      setError(
+        "کد ملی باید دقیقاً ۱۰ رقم باشد."
+      );
       return;
     }
 
@@ -126,45 +164,94 @@ const savePatient = () => {
       setError("وزن وارد شده صحیح نیست.");
       return;
     }
-    savePatient();
-    setSubmitted(true);
+
+    // ذخیره در دیتابیس
+    const saved = await savePatient();
+
+    if (saved) {
+      setSubmitted(true);
+    }
   };
 
   const selectedDiseaseList = diseases.filter(
     (disease) => patient.diseases[disease.id]
   );
 
-  const handleNationalIdChange = (value) => {
-  const nationalId = value.replace(/\D/g, "");
+  // جستجوی اطلاعات با کد ملی از دیتابیس
+  const handleNationalIdChange = async (value) => {
+    const nationalId = value.replace(/\D/g, "");
 
-  setError("");
+    setError("");
 
-  // اگر کد ملی کمتر از 10 رقم باشد
-  if (nationalId.length < 10) {
+    // اگر کمتر از 10 رقم باشد
+    if (nationalId.length < 10) {
+      setPatient((prev) => ({
+        ...prev,
+        nationalId,
+      }));
+
+      return;
+    }
+
+    // قرار دادن کد ملی در فرم
     setPatient((prev) => ({
       ...prev,
       nationalId,
     }));
 
-    return;
-  }
+    try {
+      setLoading(true);
 
-  const savedPatients =
-    JSON.parse(localStorage.getItem("patients")) || {};
+      const response = await fetch(
+        `http://localhost:5000/api/patients/${nationalId}`
+      );
 
-  const oldPatient = savedPatients[nationalId];
+      if (response.status === 404) {
+        // فرد جدید است
+        setPatient((prev) => ({
+          ...prev,
+          nationalId,
+        }));
 
-  if (oldPatient) {
-    setPatient(oldPatient);
-  } else {
-    setPatient((prev) => ({
-      ...prev,
-      nationalId,
-    }));
-  }
-};
+        return;
+      }
 
-  const heightInMeter = Number(patient.height) / 100;
+      if (!response.ok) {
+        throw new Error("خطا در دریافت اطلاعات");
+      }
+
+      const oldPatient = await response.json();
+
+      // اطلاعات دریافت شده از دیتابیس
+      setPatient({
+        name: oldPatient.name || "",
+        nationalId: oldPatient.nationalId || "",
+        age: oldPatient.age || "",
+        gender: oldPatient.gender || "",
+        height: oldPatient.height || "",
+        weight: oldPatient.weight || "",
+        diseases: oldPatient.diseases || {},
+        diseaseDetails:
+          oldPatient.diseaseDetails || {},
+      });
+
+      setError(
+        "اطلاعات این کد ملی از دیتابیس دریافت شد."
+      );
+
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        "ارتباط با دیتابیس برقرار نشد."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const heightInMeter =
+    Number(patient.height) / 100;
 
   const bmi =
     patient.height && patient.weight
@@ -213,8 +300,10 @@ const savePatient = () => {
                 maxLength="10"
                 value={patient.nationalId}
                 onChange={(e) =>
-                handleNationalIdChange(e.target.value)
-                 }
+                  handleNationalIdChange(
+                    e.target.value
+                  )
+                }
                 placeholder="کد ملی ۱۰ رقمی"
               />
             </div>
@@ -308,111 +397,130 @@ const savePatient = () => {
             </h2>
 
             <div className="disease-list">
-  {diseases.map((disease) => (
-    <div
-      className="disease-item"
-      key={disease.id}
-    >
-      <label>
-        <input
-          type="checkbox"
-          checked={
-            patient.diseases[disease.id] || false
-          }
-          onChange={() =>
-            handleDiseaseChange(disease.id)
-          }
-        />
+              {diseases.map((disease) => (
+                <div
+                  className="disease-item"
+                  key={disease.id}
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={
+                        patient.diseases[
+                          disease.id
+                        ] || false
+                      }
+                      onChange={() =>
+                        handleDiseaseChange(
+                          disease.id
+                        )
+                      }
+                    />
 
-        {disease.title}
-      </label>
+                    {disease.title}
+                  </label>
 
-      {patient.diseases[disease.id] && (
-        <div className="disease-details">
+                  {patient.diseases[
+                    disease.id
+                  ] && (
+                    <div className="disease-details">
+                      <div className="detail-group">
+                        <label>
+                          نام پزشک معالج:
+                        </label>
 
-          <div className="detail-group">
-            <label>نام پزشک معالج:</label>
+                        <input
+                          type="text"
+                          value={
+                            patient
+                              .diseaseDetails[
+                              disease.id
+                            ]?.doctor || ""
+                          }
+                          onChange={(e) =>
+                            handleDiseaseDetailChange(
+                              disease.id,
+                              "doctor",
+                              e.target.value
+                            )
+                          }
+                          placeholder="مثلاً: دکتر احمدی"
+                        />
+                      </div>
 
-            <input
-              type="text"
-              value={
-                patient.diseaseDetails[disease.id]
-                  ?.doctor || ""
-              }
-              onChange={(e) =>
-                handleDiseaseDetailChange(
-                  disease.id,
-                  "doctor",
-                  e.target.value
-                )
-              }
-              placeholder="مثلاً: دکتر احمدی"
-            />
-          </div>
+                      <div className="detail-group">
+                        <label>
+                          سابقه بیماری:
+                        </label>
 
-          <div className="detail-group">
-            <label>سابقه بیماری:</label>
+                        <textarea
+                          value={
+                            patient
+                              .diseaseDetails[
+                              disease.id
+                            ]?.history || ""
+                          }
+                          onChange={(e) =>
+                            handleDiseaseDetailChange(
+                              disease.id,
+                              "history",
+                              e.target.value
+                            )
+                          }
+                          placeholder="سابقه بیماری را وارد کنید"
+                        />
+                      </div>
 
-            <textarea
-              value={
-                patient.diseaseDetails[disease.id]
-                  ?.history || ""
-              }
-              onChange={(e) =>
-                handleDiseaseDetailChange(
-                  disease.id,
-                  "history",
-                  e.target.value
-                )
-              }
-              placeholder="سابقه بیماری را وارد کنید"
-            />
-          </div>
+                      <div className="detail-group">
+                        <label>
+                          قرص‌های مصرفی:
+                        </label>
 
-          <div className="detail-group">
-            <label>قرص‌های مصرفی:</label>
+                        <textarea
+                          value={
+                            patient
+                              .diseaseDetails[
+                              disease.id
+                            ]?.medications || ""
+                          }
+                          onChange={(e) =>
+                            handleDiseaseDetailChange(
+                              disease.id,
+                              "medications",
+                              e.target.value
+                            )
+                          }
+                          placeholder="نام داروها را وارد کنید"
+                        />
+                      </div>
 
-            <textarea
-              value={
-                patient.diseaseDetails[disease.id]
-                  ?.medications || ""
-              }
-              onChange={(e) =>
-                handleDiseaseDetailChange(
-                  disease.id,
-                  "medications",
-                  e.target.value
-                )
-              }
-              placeholder="نام داروها را وارد کنید"
-            />
-          </div>
+                      <div className="detail-group">
+                        <label>
+                          توضیحات:
+                        </label>
 
-          <div className="detail-group"> 
-  <label>توضیحات:</label> 
-
-  <textarea 
-    value={ 
-      patient.diseaseDetails[disease.id]
-        ?.description || "" 
-    } 
-    onChange={(e) => 
-      handleDiseaseDetailChange( 
-        disease.id, 
-        "description", 
-        e.target.value 
-      ) 
-    } 
-    placeholder="مثلاً تعداد عمل‌های جراحی انجام شده را وارد کنید" 
-  /> 
-</div>
-
-
-        </div>
-      )}
-    </div>
-  ))}
-</div>
+                        <textarea
+                          value={
+                            patient
+                              .diseaseDetails[
+                              disease.id
+                            ]?.description || ""
+                          }
+                          onChange={(e) =>
+                            handleDiseaseDetailChange(
+                              disease.id,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                          placeholder="مثلاً تعداد عمل‌های جراحی انجام شده را وارد کنید"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
             {error && (
               <div className="error-message">
@@ -423,8 +531,11 @@ const savePatient = () => {
             <button
               className="primary-button"
               onClick={handleSubmit}
+              disabled={loading}
             >
-              ادامه
+              {loading
+                ? "در حال پردازش..."
+                : "ادامه"}
             </button>
           </div>
         </>
@@ -435,18 +546,18 @@ const savePatient = () => {
           </h1>
 
           <MedicalProfile
-           name={patient.name}
-           nationalId={patient.nationalId}
-           age={patient.age}
-           gender={patient.gender}
-           height={patient.height}
-           weight={patient.weight}         
-           diseases={selectedDiseaseList}
-           bmi={bmi}
-           diseaseDetails={patient.diseaseDetails}
+            name={patient.name}
+            nationalId={patient.nationalId}
+            age={patient.age}
+            gender={patient.gender}
+            height={patient.height}
+            weight={patient.weight}
+            diseases={selectedDiseaseList}
+            bmi={bmi}
+            diseaseDetails={
+              patient.diseaseDetails
+            }
           />
-
-        
 
           <button
             className="secondary-button"
