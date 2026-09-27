@@ -26,6 +26,7 @@ body {
   text-align: center;
   color: #2563eb;
   margin-bottom: 30px;
+  font-family: "Shabnam", sans-serif !important;
 }
 
 .form-card,
@@ -303,4 +304,201 @@ body {
 .medical-disease p {
   line-height: 1.8;
   margin: 8px 0;
+}
+
+/* صفحه ورود با شماره موبایل */
+
+.mobile-login {
+  width: 380px;
+  max-width: 90%;
+  margin: 80px auto;
+  padding: 35px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.mobile-login h1 {
+  margin-bottom: 25px;
+}
+
+.mobile-login h2 {
+  margin-bottom: 10px;
+}
+
+.mobile-login p {
+  margin-bottom: 20px;
+}
+
+.mobile-login form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mobile-login input {
+  width: 240px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.mobile-login small {
+  display: block;
+  margin-bottom: 20px;
+  color: #777;
+}
+
+.mobile-login button {
+  width: 240px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.mobile-login button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.verification-box {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.verification-box input {
+  letter-spacing: 5px;
+  font-size: 20px;
+}
+
+/* =========================
+   صفحه ثبت اطلاعات پزشکی
+   ========================= */
+
+
+.medical-form.profile-card {
+  width: 700px;
+  max-width: 92%;
+  margin: 40px auto;
+  padding: 35px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  direction: rtl;
+}
+
+.medical-form.profile-card h1 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 35px;
+  font-size: 28px;
+}
+
+.medical-form.profile-card .form-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.medical-form.profile-card .form-row label {
+  width: 160px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.medical-form.profile-card .form-row input,
+.medical-form.profile-card .form-row select,
+.medical-form.profile-card .form-row textarea {
+  width: 320px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 15px;
+  box-sizing: border-box;
+  background: white;
+}
+
+.medical-form.profile-card .disease-details {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.medical-form.profile-card > button {
+  display: block;
+  width: 220px;
+  margin: 30px auto 0;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .medical-form.profile-card {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .medical-form.profile-card .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .medical-form.profile-card .form-row label {
+    width: auto;
+  }
+
+  .medical-form.profile-card .form-row input,
+  .medical-form.profile-card .form-row select,
+  .medical-form.profile-card .form-row textarea {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+/* =========================
+   عنوان پروفایل پزشکی
+   ========================= */
+
+.mobile-login h1.medical-title {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 42px !important;
+
+  margin: 0 0 25px 0 !important;
+  padding: 0 !important;
+
+  text-align: center !important;
+  white-space: nowrap !important;
+
+  font-family: "Shabnam", sans-serif !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+
+  color: #2563eb !important;
+
+  position: static !important;
+  transform: none !important;
 }
