@@ -479,8 +479,7 @@ body {
 /* =========================
    عنوان پروفایل پزشکی
    ========================= */
-
-.mobile-login h1.medical-title {
+  h1.medical-title {
   display: block !important;
   width: 100% !important;
   height: auto !important;

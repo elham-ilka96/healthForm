@@ -336,7 +336,7 @@ const handleVerificationSubmit = async () => {
     return (
       <div className="app-container">
         <div className="mobile-login">
-          <h1 className="mobile-title">پروفایل پزشکی</h1>
+          <h1 className="medical-title">پروفایل پزشکی</h1>
 
           <h2>تأیید شماره موبایل</h2>
 
